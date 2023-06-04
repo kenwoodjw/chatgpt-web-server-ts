@@ -31,7 +31,7 @@ import {TokenInterceptor} from "./util/TokenInterceptor";
             }),
             inject: [AppConfigService],
         }),
-        ChatModule,
+        //ChatModule,
         UserModule,
         StatModule
     ],

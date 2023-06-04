@@ -1,20 +1,18 @@
 
-import {Controller, Post, Req, Res, Sse} from '@nestjs/common';
+import {Controller, Post, Req, Res} from '@nestjs/common';
 import { Request,Response } from 'express';
 import {UserService} from "../user/user.service";
 import {StatService} from "../stat/stat.service";
-import {Observable} from "rxjs";
 import {RequestProps} from "../interface/response.interface";
 import {chatReplyProcess} from "./chatgpt";
 import type {ChatMessage} from "chatgpt";
 
 @Controller()
-export class UserController {
+export class ChatController {
     constructor(private userService: UserService,private statService: StatService) {
     }
 
     @Post("/chat-process")
-
     async chat(@Req() req: Request,@Res() res:Response) {
         res.setHeader('Content-type', 'application/octet-stream')
         try {
