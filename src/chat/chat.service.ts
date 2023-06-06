@@ -1,4 +1,4 @@
-import {Injectable, Logger, OnModuleInit, Req, Res} from '@nestjs/common';
+import {Injectable, Logger, OnModuleInit, Req, Res, Sse} from '@nestjs/common';
 import {RequestProps} from "../interface/response.interface";
 import {Request, Response} from "express";
 import {UserService} from "../user/user.service";
@@ -6,6 +6,7 @@ import {StatService} from "../stat/stat.service";
 import {isNotEmptyString} from "../util/is";
 import {sendResponse} from "../util";
 import {ApiModel} from "./types";
+import {Observable} from "rxjs";
 
 
 

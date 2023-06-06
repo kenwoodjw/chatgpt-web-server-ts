@@ -17,7 +17,7 @@ export class TokenInterceptor implements NestMiddleware {
     ];
 
     async use(req: Request, res: Response, next: () => void) {
-        if (!this.publicPaths.some((path) => req.path.startsWith(path))) {
+        if (!this.publicPaths.some((path) => req.originalUrl.startsWith(path))) {
             const loginToken = req.header('LoginToken');
             if (!loginToken) {
                 throw new Error('Error: 无访问权限 | No access rights');
