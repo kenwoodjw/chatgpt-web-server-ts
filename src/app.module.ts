@@ -1,5 +1,4 @@
 import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
-import {AppController} from './app.controller';
 import {AppService} from './app.service';
 import {AppConfigModule} from "./config/app-config.module";
 import {AppConfigService} from "./config/app-config.service";
@@ -31,9 +30,9 @@ import {TokenInterceptor} from "./util/TokenInterceptor";
             }),
             inject: [AppConfigService],
         }),
-        //ChatModule,
         UserModule,
-        StatModule
+        StatModule,
+        ChatModule,
     ],
     //controllers: [AppController],
     providers: [AppService],

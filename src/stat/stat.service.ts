@@ -1,7 +1,7 @@
 import {Inject, Injectable, Logger} from '@nestjs/common';
 import {UserService} from "../user/user.service";
 import {UserData} from "./interface/userData.interface"
-import * as moment from 'moment';
+import moment from 'moment';
 import {formatDate} from "../util/common";
 import {UserStat} from "../entity/userStat.entity";
 import {InjectRepository} from "@nestjs/typeorm";
