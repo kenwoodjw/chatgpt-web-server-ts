@@ -2,7 +2,7 @@ import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import {AppService} from './app.service';
 import {AppConfigModule} from "./config/app-config.module";
 import {AppConfigService} from "./config/app-config.service";
-import {BaseModule} from "./base/baseModule";
+import {BaseModule} from "./base/base.module";
 import {RequestMiddleware} from "./util/RequestMiddleware";
 import {ChatModule} from './chat/chat.module';
 import {TypeOrmModule} from "@nestjs/typeorm";

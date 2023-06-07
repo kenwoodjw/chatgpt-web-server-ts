@@ -37,7 +37,8 @@ export class EmailService {
                     pass: this.appConfigService.getEmailPassword(), // 请替换成您自己的电子邮件密码或应用程序密码（如果使用的是Google帐户）
                 },
                 socketTimeout: 10000, // 60秒
-                connectionTimeout: 10000 // 60秒
+                connectionTimeout: 10000, // 60秒
+                debug:true
             });
 
             this.logger.log("init email client successfully");

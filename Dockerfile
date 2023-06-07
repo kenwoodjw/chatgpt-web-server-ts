@@ -1,16 +1,22 @@
 # service
 FROM node:lts-alpine
 
-# 为了安装sqlite3需要安装一些编译工具
-RUN npm install pnpm -g
-RUN npm i -g @nestjs/cli
 
 WORKDIR /app
 
-COPY ./* /app/
+# 将 package.json 和 pnpm-lock.yaml 复制到工作目录
+COPY ./package*.json ./
+COPY ./pnpm-lock.yaml ./
 
-RUN pnpm install && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
-RUN nset build
+
+
+# 为了安装sqlite3需要安装一些编译工具
+RUN npm install pnpm -g
+RUN pnpm install
+RUN pnpm setup && pnpm i -g @nestjs/cli
+
+COPY ./* /app/
+RUN nest build
 
 ADD ./.env /app/dist/.env
 # 设置时区
