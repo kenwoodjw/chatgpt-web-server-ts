@@ -7,7 +7,7 @@ RUN npm i -g @nestjs/cli
 
 WORKDIR /app
 
-COPY ./* /app
+COPY ./* /app/
 
 RUN pnpm install && rm -rf /root/.npm /root/.pnpm-store /usr/local/share/.cache /tmp/*
 RUN nset build
@@ -18,4 +18,4 @@ ENV TZ=Asia/Shanghai
 
 EXPOSE 3002
 
-CMD ["pnpm", "run", "start"]
+CMD ["pnpm", "run", "start:prod"]
