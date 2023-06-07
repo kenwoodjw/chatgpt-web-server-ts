@@ -48,7 +48,13 @@ export class UserService {
      * 获取所有用户信息
      */
     public async findAllUser(): Promise<User[]> {
-        return this.usersRepository.find();
+        return this.usersRepository.find(
+            {
+                order:{
+                    email:"asc"
+                }
+            }
+        );
     }
 
     public getUserRepo(): Repository<User>{

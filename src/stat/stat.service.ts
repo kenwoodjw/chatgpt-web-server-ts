@@ -17,7 +17,6 @@ export class StatService {
     ) {
     };
 
-
     /**
      * 通过用户名和密码查找单个用户
      * @param userDto
@@ -26,26 +25,27 @@ export class StatService {
         const today = Number.parseInt(formatDate(new Date()));
         const userRepo = this.usersService.getUserRepo()
         const queryBuilder = userRepo.createQueryBuilder();
-        const subqueryBuilder = queryBuilder
-            .subQuery()
-            .select('query_count')
-            .from(UserStat, 'stat')
-            .where('stat.email = email')
-            .andWhere('stat.squad_date = :squad_date', { squad_date: today })
-            .getQuery();
-
-        queryBuilder
-            .select(['email', 'create_time', 'last_login_time'])
-            .addSelect(`(${subqueryBuilder})`, 'query_count');
-        this.logger.log(queryBuilder.getQuery())
-        const users = await queryBuilder.getRawMany();
+        const users = await this.usersService.findAllUser()
+        const stats = await this.statRepository.find(
+            {
+                where:{squad_date:today},
+                order:{ email: "ASC"}
+            }
+        )
         const res = []
+        let stat_index = 0;
+        let query_count =0
         for (let i = 0; i < users.length; i++) {
+            if(users[i].email === stats[stat_index].email){
+                query_count = stats[stat_index].query_count
+            }else{
+                query_count = 0
+            }
             res.push({
                 email:users[i].email,
                 create_time:  users[i].create_time?moment(users[i].create_time).format('YYYY-MM-DD HH:mm:ss'): "",
                 last_login_time: users[i].last_login_time?moment(users[i].last_login_time).format('YYYY-MM-DD HH:mm:ss'): "",
-                usage:users[i].query_count?users[i].query_count:0,
+                usage:query_count,
                 limit:10
             })
         }
