@@ -1,4 +1,4 @@
-import {Controller, Get, Post, Req, Res} from '@nestjs/common';
+import {Controller, Get, Logger, Post, Req, Res} from '@nestjs/common';
 import {EmailService} from "./email.service";
 import {Response} from "../interface/response.interface";
 import {Request} from "express";
@@ -6,8 +6,8 @@ import {AuthService} from "./auth.service";
 
 @Controller("service")
 export class BaseController {
-    constructor(private readonly emailService: EmailService,private readonly authService: AuthService) {}
-
+    constructor(private emailService: EmailService,private authService: AuthService) {}
+    private readonly logger = new Logger(BaseController.name);
 
     @Post("/sendEmailCode")
     public async sendEmailCode(@Req() req: Request): Promise<Response> {
@@ -21,6 +21,7 @@ export class BaseController {
                 status: "Success"
             })
         } catch (error) {
+            this.logger.error(error)
             return Promise.resolve({ status: 'Fail', message: error.message, data: null })
         }
     }
