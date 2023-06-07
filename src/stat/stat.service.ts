@@ -6,6 +6,7 @@ import {formatDate} from "../util/common";
 import {UserStat} from "../entity/userStat.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
+import {User} from "../entity/user.entity";
 @Injectable()
 export class StatService {
 
@@ -29,21 +30,21 @@ export class StatService {
             .subQuery()
             .select('query_count')
             .from(UserStat, 'stat')
-            .where('stat.email = :email', { email: '$email' })
+            .where('stat.email = email')
             .andWhere('stat.squad_date = :squad_date', { squad_date: today })
             .getQuery();
 
         queryBuilder
             .select(['email', 'create_time', 'last_login_time'])
             .addSelect(`(${subqueryBuilder})`, 'query_count');
-
+        this.logger.log(queryBuilder.getQuery())
         const users = await queryBuilder.getRawMany();
         const res = []
         for (let i = 0; i < users.length; i++) {
             res.push({
                 email:users[i].email,
                 create_time:  users[i].create_time?moment(users[i].create_time).format('YYYY-MM-DD HH:mm:ss'): "",
-                last_login_time: users[i].last_login_time?moment(users[i].create_time).format('YYYY-MM-DD HH:mm:ss'): "",
+                last_login_time: users[i].last_login_time?moment(users[i].last_login_time).format('YYYY-MM-DD HH:mm:ss'): "",
                 usage:users[i].query_count?users[i].query_count:0,
                 limit:10
             })
@@ -64,7 +65,7 @@ export class StatService {
                     squad_date:today
                 }
             })
-        if(record===undefined) {
+        if(record === null) {
             return 0
         }else{
             return record.query_count
@@ -73,6 +74,24 @@ export class StatService {
 
 
     public async updateQueryCountByEmail(email:string,count:number): Promise<void> {
-
+        const today = Number.parseInt(formatDate(new Date()));
+        const existingUser = await this.statRepository.findOne(
+            {
+                where:{
+                    email:email,
+                    squad_date:today
+                }
+            }
+        );
+        if (existingUser) {
+            existingUser.query_count = count;
+            await this.statRepository.update({squad_date:today,email:email},{query_count:count});
+        } else {
+            const us = new UserStat();
+            us.squad_date = today;
+            us.email = email;
+            us.query_count = count;
+            await this.statRepository.insert(us);
+        }
     }
 }

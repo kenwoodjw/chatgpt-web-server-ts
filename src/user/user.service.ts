@@ -55,4 +55,11 @@ export class UserService {
         return this.usersRepository;
     }
 
+    public async updateLoginTime(email: string) {
+        await this.usersRepository.createQueryBuilder()
+            .update(User)
+            .set({ last_login_time:  new Date()})
+            .where('email = :email', { email })
+            .execute();
+    }
 }

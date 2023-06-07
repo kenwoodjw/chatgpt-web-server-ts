@@ -24,6 +24,10 @@ export class UserController {
 				message: "登录成功",
 				status: "Success"
 			}
+
+			//更新最近登录时间
+			await this.userService.updateLoginTime(userDto.email);
+
 			return Promise.resolve(resData)
 		} else {
 			const resData = {

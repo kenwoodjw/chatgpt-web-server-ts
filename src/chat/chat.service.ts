@@ -8,8 +8,6 @@ import {sendResponse} from "../util";
 import {ApiModel} from "./types";
 import {Observable} from "rxjs";
 
-
-
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 export const importDynamic = new Function('modulePath', 'return import(modulePath)');
 
@@ -61,10 +59,10 @@ export class ChatService implements OnModuleInit {
             this.logger.log('Creating ChatGPT Api')
             this.gptApi = new ChatGPTAPI({ ...options })
 
-            this.logger.log('Sending test message');
+            //this.logger.log('Sending test message');
 
-            const result = await this.sendMessage('Hello World!')
-            console.log(`${result?.text} from ${result?.id}`);
+            //const result = await this.sendMessage('Hello World!')
+            //console.log(`${result?.text} from ${result?.id}`);
 
         }
         catch (e) {
@@ -92,26 +90,14 @@ export class ChatService implements OnModuleInit {
 
             const {prompt, options = {}, systemMessage, temperature, top_p} = req.body as RequestProps
             let firstChunk = true
-
-            /*await this.chatReplyProcess({
-                message: prompt,
-                lastContext: options,
-                process: (chat: typeof this.ChatMessage) => {
-                    res.write(firstChunk ? JSON.stringify(chat) : `\n${JSON.stringify(chat)}`)
-                    firstChunk = false
-                },
-                systemMessage,
-                temperature,
-                top_p,
-            })*/
             const lastContext = options;
             const message = prompt;
             const process = (chat: typeof this.ChatMessage) => {
                 res.write(firstChunk ? JSON.stringify(chat) : `\n${JSON.stringify(chat)}`)
                 firstChunk = false
             }
-
             //const { message, lastContext, process, systemMessage, temperature, top_p } = paraObj
+            const result  = { type: 'Success', data: null }
             try {
                 let options: typeof this.SendMessageOptions = { timeoutMs:this.timeoutMs }
 
@@ -133,41 +119,25 @@ export class ChatService implements OnModuleInit {
                         process?.(partialResponse)
                     },
                 })
-
-                return sendResponse({ type: 'Success', data: response })
+                //更新提问次数
+                await sendResponse({ type: 'Success', data: response })
+                await this.statService.updateQueryCountByEmail(email,count+1);
             }
             catch (error: any) {
                 const code = error.statusCode
-                global.console.log(error)
                 if (Reflect.has(ErrorCodeMessage, code))
-                    return sendResponse({ type: 'Fail', message: ErrorCodeMessage[code] })
-                return sendResponse({ type: 'Fail', message: error.message ?? 'Please check the back-end console' })
+                    await sendResponse({ type: 'Fail', message: ErrorCodeMessage[code] })
+                await sendResponse({ type: 'Fail', message: error.message ?? 'Please check the back-end console' })
             }
-
-
-            /*await importDynamic("chatgpt").then(module => {
-                const { ChatMessage } = module;
-                chatReplyProcess({
-                    message: prompt,
-                    lastContext: options,
-                    process: (chat: typeof ChatMessage) => {
-                        res.write(firstChunk ? JSON.stringify(chat) : `\n${JSON.stringify(chat)}`)
-                        firstChunk = false
-                    },
-                    systemMessage,
-                    temperature,
-                    top_p,
-                })
-            })*/
-            await this.statService.updateQueryCountByEmail(email,count+1);
         } catch (error) {
+            this.logger.error(error)
             res.write(JSON.stringify(error))
         } finally {
             res.end()
         }
     }
 
-    async sendMessage(message: string, parentMessageId?: string) {
+    /*async sendMessage(message: string, parentMessageId?: string) {
 
         if (!message || message.length === 0) {
             throw new Error("Message is empty");
@@ -183,7 +153,6 @@ export class ChatService implements OnModuleInit {
                     text?: string | undefined,
                 } = await this.gptApi.sendMessage(message, {
                     parentMessageId,
-
                 })
                 return res;
             } catch (e) {
@@ -192,7 +161,10 @@ export class ChatService implements OnModuleInit {
                 await delay(10000);
             }
         }
-    }
+    }*/
+
+
+
     /*
         async chatReplyProcess(options: ReqOptions) {
             const { message, lastContext, process, systemMessage, temperature, top_p } = options
