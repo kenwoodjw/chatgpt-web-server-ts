@@ -13,7 +13,7 @@ COPY ./pnpm-lock.yaml ./
 # 为了安装sqlite3需要安装一些编译工具
 RUN npm install pnpm -g
 RUN pnpm install
-RUN pnpm setup && pnpm i -g @nestjs/cli
+RUN npm i -g @nestjs/cli
 
 COPY ./* /app/
 RUN nest build
