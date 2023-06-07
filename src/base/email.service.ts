@@ -62,7 +62,7 @@ export class EmailService {
                 if(!error){
                     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 设置验证码过期时间为当前时间+10分钟
                     this.status.set(to, {code, expiresAt}); // 存储验证码和过期时间信息
-                    this.logger.log(info)
+                    this.logger.log(to+", emailCode:"+code)
                 }else{
                     this.logger.error(error)
                 }
@@ -87,10 +87,5 @@ export class EmailService {
             return true;
         }
         return false;
-    }
-
-
-    private async initEamilClient() {
-
     }
 }

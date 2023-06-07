@@ -28,7 +28,7 @@ export class TokenInterceptor implements NestMiddleware {
                 req['userInfo'] = { email: userInfo.email };
 
                 //todo 后续完善, 目前只有admin用户才能访问
-                if(toPath === "/admin" && userInfo.email !== "admin@qq.com"){
+                if(toPath === "/stat/userdata" && userInfo.email !== "admin@qq.com"){
                     res.send({
                         status: 'Unauthorized',
                         message: 'Please authenticate.',

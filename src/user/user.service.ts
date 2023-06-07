@@ -2,7 +2,7 @@ import {Inject, Injectable, Logger} from '@nestjs/common';
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "../entity/user.entity";
-import {UserLoginDto} from "./dto/user.dto";
+import {UserLoginDto, UserRegisterDto} from "./dto/user.dto";
 import {UserStat} from "../entity/userStat.entity";
 import {formatDate} from "../util/common";
 import {UserData} from "../stat/interface/userData.interface";
@@ -67,5 +67,13 @@ export class UserService {
             .set({ last_login_time:  new Date()})
             .where('email = :email', { email })
             .execute();
+    }
+
+    public async createUser(userDto: UserRegisterDto) {
+        const u = new User()
+        u.email = userDto.email
+        u.password = userDto.password
+        u.create_time = new Date()
+        await this.usersRepository.save(u)
     }
 }

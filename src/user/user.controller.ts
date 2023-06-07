@@ -1,13 +1,17 @@
 
-import {Body, Controller, Post, Req} from '@nestjs/common';
+import {Body, Controller, Logger, Post, Req} from '@nestjs/common';
 import {UserService} from "./user.service";
-import {UserLoginDto} from "./dto/user.dto";
+import {UserLoginDto, UserRegisterDto} from "./dto/user.dto";
 import { Response } from "../interface/response.interface"
 import {AuthService} from "../base/auth.service";
+import {EmailService} from "../base/email.service";
+import {getSysdate} from "../util/common";
 
 @Controller('user')
 export class UserController {
-	constructor(private userService: UserService,private authService:AuthService) {
+
+	private readonly logger = new Logger(UserController.name);
+	constructor(private userService: UserService,private authService:AuthService,private emailService:EmailService) {
 	}
 
 	@Post("/login")
@@ -39,6 +43,28 @@ export class UserController {
 		}
 
 
+	}
+
+	@Post("new")
+	public async register(@Body() userDto: UserRegisterDto): Promise<Response>{
+		if (!this.emailService.checkEmailCode(userDto.email, userDto.emailCode)) {
+			return Promise.resolve({
+				data: "",
+				message: "验证码错误或超时",
+				status: "Fail"
+			});
+		}
+		try {
+			const result: any = await this.userService.createUser(userDto);
+			return Promise.resolve({
+				data: "",
+				message: "注册成功",
+				status: "Success"
+			});
+		} catch (err) {
+			this.logger.error(err);
+			return Promise.resolve({ status: 'Fail', message: err.message, data: null })
+		}
 	}
 
 }
