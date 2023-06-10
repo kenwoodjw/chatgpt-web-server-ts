@@ -20,20 +20,17 @@ export class TokenInterceptor implements NestMiddleware {
         const toPath = req.originalUrl;
         if (!this.publicPaths.some((path) => toPath.startsWith(path))) {
             const loginToken = req.header('LoginToken');
-            if (!loginToken) {
-                throw new Error('Error: 无访问权限 | No access rights');
-            }
+
             try {
+                if (!loginToken) {
+                    throw new Error('Error: 无访问权限 | No access rights');
+                }
                 const userInfo = await this.authService.verifyToken(loginToken);
                 req['userInfo'] = { email: userInfo.email };
 
                 //todo 后续完善, 目前只有admin用户才能访问
                 if(toPath === "/stat/userdata" && userInfo.email !== "admin@qq.com"){
-                    res.send({
-                        status: 'Unauthorized',
-                        message: 'Please authenticate.',
-                        data: null,
-                    });
+                    throw new Error('Error: 无访问权限 | No access rights');
                 }
                 next();
             } catch (error) {

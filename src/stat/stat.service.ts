@@ -23,8 +23,6 @@ export class StatService {
      */
     public async fetchUserData(): Promise<UserData[]> {
         const today = Number.parseInt(formatDate(new Date()));
-        const userRepo = this.usersService.getUserRepo()
-        const queryBuilder = userRepo.createQueryBuilder();
         const users = await this.usersService.findAllUser()
         const stats = await this.statRepository.find(
             {
@@ -36,7 +34,8 @@ export class StatService {
         let stat_index = 0;
         let query_count =0
         for (let i = 0; i < users.length; i++) {
-            if(users[i].email === stats[stat_index].email){
+            //stat可能为空
+            if(stats[stat_index] && users[i].email === stats[stat_index].email){
                 query_count = stats[stat_index].query_count
             }else{
                 query_count = 0
